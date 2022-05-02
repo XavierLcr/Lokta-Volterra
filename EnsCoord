@@ -1,0 +1,81 @@
+# Définition de la classe Enscoord
+
+class EnsCoord:
+    ''' Regroupe un ensemble de Coord '''
+    
+    def __init__(self):
+        ''' Initialise la liste '''
+        self.liste = []
+        self.taille = 0
+        
+    def DonneCoordDeEnsCoord(self, i):
+        ''' Renvoie la i-ème valeur d'un EnsCoord' '''
+        return self.liste[i]
+        
+    def AjouteCoordonee(self, coordo):
+        ''' Ajoute une paire de coordonnées '''
+        self.liste.append(coordo)
+        self.taille = self.taille + 1
+        
+    def EnsCoordVide(self):
+        ''' Vérifie si un EnsCoord est vide '''
+        longueur = len(self.liste)
+        return ( longueur == 0 )
+    
+    def RetireCoordDeEnsCoord_1(self, i):
+        ''' Retire la i-ème paire de coordonnées en décalant toutes les suivantes '''
+        del self.liste[i]
+        self.taille = self.taille - 1
+        
+    def RetireCoordDeEnsCoord_2(self, i):
+        ''' Retire la i-ème paire de coordonnées en la remplaçant par la dernière '''
+        self.liste[i] = self.liste[-1] 
+        del self.liste[-1]
+        self.taille = self.taille - 1
+        
+    def AfficheEnsCoord(self):
+        ''' Affiche les valeurs des coordonnées '''
+        print("Nombre de paires de coordonnées : ", self.DonneTailleEnsCoord())
+        for i in range(len(self.liste)):
+            self.DonneCoordDeEnsCoord(i).AfficheCoord()
+        
+    def DonneTailleEnsCoord(self):
+        ''' Renvoie la longueur d'un EnsCoord '''
+        return self.taille
+    
+    def ModifieCoord_i(self, i, coord):
+        ''' Remplace la i-ème paire de coordonnées par coord '''
+        self.liste[i] = coord
+    
+    def IntervertitDeuxCoords(self, i, j):
+        ''' Intervertit deux corrdonnées dans un EnsCoord '''
+        if i != j:
+            temp = self.DonneCoordDeEnsCoord((j))
+            self.ModifieCoord_i(j, self.DonneCoordDeEnsCoord(i))
+            self.ModifieCoord_i(i, temp)
+        
+    def IntervertitNFoisAlea(self, n):
+        ''' Intervertit les nombres de la liste n fois '''
+        for i in range(n):
+            a = random.randint(0, self.DonneTailleEnsCoord()-1)
+            b = random.randint(0, self.DonneTailleEnsCoord()-1)
+            self.IntervertitDeuxCoords(a, b)
+            
+    def RendEnsCoordVide(self):
+        self.liste = []
+        self.taille = 0
+
+def ColleEnsCoords(ec1, ec2):
+    ''' Colle deux EnsCoords'''
+    ec3 = EnsCoord()
+    ec3.taille = ec1.DonneTailleEnsCoord() 
+    
+    ec3.liste = ec1.liste
+    for i in range(ec2.DonneTailleEnsCoord()):
+        ec3.AjouteCoordonee(ec2.DonneCoordDeEnsCoord(i))
+        
+    return ec3
+
+def afficheNEspace(n):
+    for i in range(n):
+        print(" ", end="")
