@@ -1,0 +1,50 @@
+# Cette partie comporte la class Coord et les fonctions affiliées
+
+
+def donneTotalLignes():	
+    ''' Renvoie le nombre de lignes de la grille '''		
+    return LIGNES
+
+def donneTotalColonnes():
+    ''' Renvoie le nombre de colonnes de la grille '''
+    return COLONNES
+
+# Création de la class Coord
+class Coord:
+    
+    
+    def __init__(self, ligne, colonne):
+        ''' Initialisation d'un Coord '''
+        self.ligne = ligne
+        self.colonne = colonne
+        
+    def DonneLigne(self):
+        ''' Donne la ligne d'une coordonnée '''
+        return self.ligne
+    
+    def DonneColonne(self):
+        ''' Donne la colonne d'une coordonnée '''
+        return self.colonne
+    
+    def AfficheCoord(self):
+        ''' Affiche les valeurs d'une coordonnée '''
+        print("Ligne = ", self.ligne, " ; Colonne = ", self.colonne)
+    
+def CoordAleatoire(x_min, x_max, y_min, y_max):
+    ''' Renvoie un Coord aléatoire (bornes incluses) '''
+    coordo = Coord(random.randint(x_min, x_max), random.randint(y_min, y_max))
+    return coordo
+
+def CoordIdentiques(c1, c2):
+    ''' Verifie si deux Coord sont identiques '''
+    if c1.DonneLigne() == c2.DonneLigne() and c1.DonneColonne() == c2.DonneColonne():
+        return True
+    else:
+        return False
+    
+def DistanceCoord( coord1, coord2):
+    ''' Calcule la distance minimale entre deux points '''
+    ''' On utilise la distance euclidienne et non le nombre minimum de déplacements, celui-ci étant bien plus lourd à calculer pour un résultat très similaire '''
+    res = (coord1.DonneLigne() - coord2.DonneLigne())**2  +  (coord1.DonneColonne() - coord2.DonneColonne())**2
+    res = np.sqrt(res)
+    return res
