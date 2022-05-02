@@ -1,0 +1,70 @@
+# Définition de la classe Animal et fonctions associées
+espece = ["Rien", "Proie", "Predateur", "Arbre1", "Arbre2"]
+    
+genre = ["Male", "Femelle"]
+    
+class Animal:
+    ''' Un élément Animal peut également être un végétal '''
+    
+    def __init__(self, esp, coordo):
+        ''' Crée un animal '''
+        
+        ''' esp est le numéro d'une espèce, coordo est une coordonnée '''
+        
+        self.animal = espece[esp]      # Espèce de l'individu
+        self.emplacement = coordo       # Emplacement de l'individu
+        self.energie = FoodInit      # Correspond à l'énergie de base de l'Animal (seulement utile  pour le prédateur)
+        self.sexe = genre[random.randint(0, 1)]  # Administre un sexe à l'Animal (seulement utile pour la proie et le prédateur)
+        self.age = 0                      # Affecte l'age à la naissance : 0
+        
+    def DonneEspece(self):
+        ''' Retourne l'espèce d'un individu'''
+        return self.animal
+    
+    def ModifieCoordonneeAnimal(self, coordo):
+        ''' Modifie les coordonnées de l'animal '''
+        self.emplacement = coordo
+    
+    def ModifieAgeAnimal(self):
+        ''' Vieillit l'individu d'un an '''
+        self.age = self.age + 1
+        
+    def DonneAgeAnimal(self):
+        ''' Retourne l'age d'un individu '''
+        return self.age
+    
+    def DonneCoordAnimal(self):
+        ''' Renvoie les coordonnées d'un individu '''
+        return self.emplacement
+    
+    def DonneGenreAnimal(self):
+        ''' Retourne le sexe d'un individu '''
+        return self.sexe
+    
+    def DonneEnergieAnimal(self):
+        ''' Retourne le niveau d'énérgie d'un individu '''
+        return self.energie 
+    
+    def ModifieEnergieAnimal(self, nourriture):
+        
+        ''' Fait varier le niveau d'énérgie de l'individu '''
+        ''' nourriture est un booléen selon si l'individu se nourrit '''
+        
+        if nourriture == False:
+            self.energie  = self.energie -1
+        else :
+            if self.energie + FoodProie < MaxFood:
+                self.energie = self.energie + FoodProie
+            else :
+                self.energie = MaxFood
+
+    def AfficheAnimal(self):
+        
+        ''' Affiche les informations d'un individu '''
+        
+        print("Espèce : ", self.animal)
+        print("Coordonnées : (", self.DonneCoordAnimal().DonneLigne(), ", ", self.DonneCoordAnimal().DonneColonne(), ")")
+        print("Energie : ", self.energie)
+        print("Sexe : ", self.sexe)
+        print("Age : ", self.age)
+        
