@@ -1,0 +1,553 @@
+#  Création de la class Grille et des fonctions associées
+
+class Grille :
+    
+    def __init__(self):
+        ''' Crée une grille sans animaux ni arbres - seulement de Rien '''
+        self.grille = []
+       
+        for i in range(0, donneTotalLignes(), 1):
+            nvligne = []
+            for j in range(0, donneTotalColonnes(), 1):
+                nvligne.append(0)
+            self.grille.append(nvligne)
+                     
+        for i in range(0, donneTotalLignes(), 1):
+            for j in range(0, donneTotalColonnes(), 1):
+                self.grille[int(i)][ int(j)] = Animal(0, Coord(int(i), int(j)))
+                
+        self.Nombre_Predateurs = 0
+        self.Nombre_Proies = 0
+        
+    def DansCase(self, coordo, esp):
+        ''' Renvoie un booléen suivant si l'animal dans la case coordo est de l'espèce esp '''
+        res = self.grille[coordo.DonneLigne()][coordo.DonneColonne()].DonneEspece()
+        return res == esp
+
+    def ModifieGrilleCase(self, coordo, anim):
+        '''Remplace une case par un animal (tel dans un déplacement) '''
+        self.grille[coordo.DonneLigne()][coordo.DonneColonne()] = anim   
+        self.grille[coordo.DonneLigne()][coordo.DonneColonne()].emplacement = coordo  
+        
+    def ModifieNombreAnimalGrille(self, esp, nv_valeur):
+        ''' Modifie la valeur comptant le nombdre d'animaux d'une espèce dans la grille '''
+        if esp == espece[1]:
+            self.Nombre_Proies = nv_valeur
+        elif esp == espece[2]:
+            self.Nombre_Predateurs = nv_valeur
+            
+    def DonneNombreEspeceGrille(self, esp):
+        ''' Donne la valeur du nombre de représentants d'une espèce dans la grille '''
+        if esp == espece[1]:
+            return self.Nombre_Proies
+        elif esp == espece[2]:
+            return self.Nombre_Predateurs
+    
+    def DonneAnimalGrille(self, coordo):
+        ''' Retourne l'animal aux coordonnées décidées '''
+        return self.grille[coordo.DonneLigne()][coordo.DonneColonne()]
+    
+
+    def Initialise_Grille(self):
+        ''' Crée une grille aléatoire de départ selon les paramètres initiaux '''
+        ''' Pour cela, on tire des cases aléatoires qu'on remplit par un individu si celles-ci sont vides '''
+        
+        # Donne le nombre de chaque espèce au début
+        NbProies = int(donneTotalColonnes() * donneTotalLignes() * Debut_Proie)
+        NbPredateurs = int(donneTotalColonnes() * donneTotalLignes() * Debut_Predateur)
+        if Arbre == True :
+            NbArbres = int(donneTotalColonnes() * donneTotalLignes() * Debut_Arbre)
+        else :
+            NbArbres = 0
+            
+        # Mettons les totaux à jour
+        self.ModifieNombreAnimalGrille("Proie", NbProies)
+        self.ModifieNombreAnimalGrille("Predateur", NbPredateurs)
+            
+        # Plaçons dans un premier temps les arbres si cela est voulu
+        while(NbArbres > 0):
+            coordoArbre = CoordAleatoire(0, donneTotalLignes()-1, 0, donneTotalColonnes()-1)
+            if self.DansCase(coordoArbre, "Rien") == True:
+                self.ModifieGrilleCase(coordoArbre, Animal(random.randint(3, 4), coordoArbre))
+                NbArbres = NbArbres-1
+                
+        # Plaçons les proies
+        while(NbProies > 0):
+            coordoProie = CoordAleatoire(0, donneTotalLignes()-1, 0, donneTotalColonnes()-1)
+            if self.DansCase(coordoProie, "Rien") == True:
+                self.ModifieGrilleCase(coordoProie, Animal(1, coordoProie))
+                NbProies = NbProies - 1
+                
+        # Plaçons les prédateurs
+        while(NbPredateurs > 0):
+            coordoPredateur = CoordAleatoire(0, donneTotalLignes()-1, 0, donneTotalColonnes()-1)
+            if self.DansCase(coordoPredateur, "Rien") == True:
+                self.ModifieGrilleCase(coordoPredateur, Animal(2, coordoPredateur))
+                NbPredateurs = NbPredateurs - 1
+        
+    def AffichageSimple(self):
+        ''' Affiche la grille de façon simpliste
+        A pour un arbre
+        P pour un prédateur
+        L pour une proie '''
+        
+        
+        for i in range(donneTotalLignes()):
+            for j in range(donneTotalColonnes()):
+                if self.DansCase(Coord(i,j), "Rien") == True :
+                    print("~", end="")
+                elif self.DansCase(Coord(i,j), "Proie") == True :
+                    print("L", end="")
+                elif self.DansCase(Coord(i,j), "Predateur") == True :
+                    print("P", end="")
+                else :
+                    print("A", end="")
+                print(" ", end="")
+            print("")
+        print("")
+        
+    def AfficheCoordGrille(self):
+        for i in range(donneTotalLignes()):
+            for j in range(donneTotalColonnes()):
+                print("(", self.grille[i][j].DonneCoordAnimal().DonneLigne() , ", ", self.grille[i][j].DonneCoordAnimal().DonneColonne(), ")",end="")
+            print("")
+        
+        
+    def CombienAnimaux(self, esp):
+        ''' Renvoie un EnsCoord de l'ensemble des animaux d'une espèce '''
+        
+        liste = EnsCoord()
+        
+        for i in range(donneTotalLignes()):
+            for j in range(donneTotalColonnes()):
+                if self.DansCase(Coord(i, j), esp) == True:
+                    liste.AjouteCoordonee(Coord(i,j))
+        
+        return liste
+    
+    def HaloCaseEspece(self, coordo, esp):
+        ''' Renvoie un EnsCoord des cases autour d'une case (celle-ci étant exclue) contenant une certaine espèce '''
+        
+        liste = EnsCoord()
+        
+        # Trouvons les dimensions des cases autour de coordo (Gestion des bords)
+        maxX = min(donneTotalLignes()-1, coordo.DonneLigne() + 1)
+        maxY = min(donneTotalColonnes()-1, coordo.DonneColonne() + 1)
+        minX = max(0, coordo.DonneLigne() - 1)
+        minY = max(0, coordo.DonneColonne() - 1)
+        
+        for i in range(minX, maxX + 1):
+            for j in range(minY, maxY + 1):
+                if CoordIdentiques(Coord(i, j), coordo) == False and self.DansCase(Coord(i, j), esp) == True : 
+                    liste.AjouteCoordonee(Coord(i,j))
+        
+        return liste
+    
+    def SeReproduit(self, coordo):
+        ''' Nous informe de si l'animal se  - renvoie un booléen '''
+        
+        indiv = self.DonneAnimalGrille(coordo)
+        
+        # Un mâle ne peut pas avoir d'enfants
+        if (indiv.DonneGenreAnimal() == "Male"):
+            return False
+        
+        esp = self.DonneAnimalGrille(coordo).DonneEspece()
+        haloPerso = self.HaloCaseEspece(coordo, esp)        # On regarde les animaux de la même espèce autour de l'individu
+        
+        # Un animal ne peut se reproduire que si un des animaux autour est du sexe opposé, donc un male
+        oppose = False
+        for i in range(haloPerso.DonneTailleEnsCoord()):
+            coordtemp = haloPerso.DonneCoordDeEnsCoord(i)
+            if self.DonneAnimalGrille(coordtemp).DonneGenreAnimal() == "Male":
+                oppose = True
+                break
+        if oppose == False :
+                return False
+        
+        # Il faut vérifier que l'animal ait la place de se reproduire
+        halo2 = self.HaloCaseEspece(coordo, "Rien")
+        if esp == "Proie" and halo2.DonneTailleEnsCoord() < MinFreeBirthProie :
+            return False
+        elif esp == "Predateur" and halo2.DonneTailleEnsCoord() < MinFreeBirthPredateur :
+            return False
+        
+        # Il faut vérifier, si l'animal est un prédateur, qu'il ait l'énergie de se reproduire 
+        if esp == "Predateur" and indiv.DonneEnergieAnimal() < FoodReprod :
+            return False
+        
+        # Toutes les conditions physiques ont été vérifiées
+        # Il y a une part d'aléa dans la reproduction même si elle est théoriquement possible
+        if esp == "Proie":
+            return random.random() <= ProbBirthProie
+        elif esp == "Predateur":
+            return random.random() <= ProbBirthPredateur
+        else:
+            return False
+        
+    def ModifieAgeAnimalDansGrille(self, coord):
+        ''' Modifie l'âge d'un anial dans la grille '''
+        self.grille[coord.DonneLigne()][coord.DonneColonne()].ModifieAgeAnimal()
+            
+    def ModifieEnergieAnimalDansGrille(self, coord, mange):
+        ''' Modifie le niveau d'énergie d'un prédateur dans la grille '''
+        self.grille[coord.DonneLigne()][coord.DonneColonne()].ModifieEnergieAnimal(mange)
+    
+    def DeplaceUnAnimal(self, coordo1, coordo2, bebe):
+        ''' Deplace une proie de coordo1 à coordo2, le vieillit d'une unité  '''
+        ''' bebe est un booléen indiquant si il y a reproduction '''
+        
+        esp = self.DonneAnimalGrille(coordo1).DonneEspece()
+        
+        # Le prédateur se nourrit s'il le peut
+        mange = self.DansCase(coordo2, "Proie")     # Booléen afin de savoir si une proie est mangée
+        if esp == "Predateur" :
+                self.ModifieEnergieAnimalDansGrille(coordo1, mange)
+                if mange == True:
+                    self.ModifieNombreAnimalGrille("Proie", self.DonneNombreEspeceGrille("Proie") - 1)
+        
+        # On ne déplace l'animal que si coordo2 diffère de coordo1
+        if CoordIdentiques(coordo1, coordo2)==False :
+            # On déplace l'individu
+            if self.DonneAnimalGrille(coordo1).DonneEnergieAnimal() > 0:        # Cela sera toujours vrai pour la proie
+                self.ModifieGrilleCase(coordo2, self.DonneAnimalGrille(coordo1))
+            else :
+                self.ModifieGrilleCase(coordo1, Animal(0, coordo1))     # L'animal est remplacé par du vide en cas de décès de faim
+                self.ModifieNombreAnimalGrille("Predateur", self.DonneNombreEspeceGrille("Predateur") - 1)
+            
+            # Si l'individu se reproduit, on met le bébé dans coord1
+            esp2 = 1 
+            if esp == "Predateur":
+                esp2 = 2
+            
+            if bebe == True :
+                self.ModifieGrilleCase(coordo1, Animal(esp2, coordo1))
+                self.ModifieNombreAnimalGrille(esp, self.DonneNombreEspeceGrille(esp) + 1)
+            else :
+                self.ModifieGrilleCase(coordo1, Animal(0, coordo1))
+
+        # Dans tous les cas, l'animal vieillit
+        self.ModifieAgeAnimalDansGrille(coordo2)
+        
+    def DeplacementBasique(self, coordo, esp):
+        ''' Déplace les animaux selon un procédé rudimentaire '''
+        ''' La proie va sur une case vide aléatoire si elle le peut ''' 
+        ''' Le prédateur mange une proie aléatoire parmi celles juste autour de lui. Suit le comportement des proies si aucune proie à côté '''
+           
+        if esp == "Proie" :
+            halo = self.HaloCaseEspece(coordo, "Rien")
+                
+            if halo.DonneTailleEnsCoord() > 0:
+                alea = random.randint(0, halo.DonneTailleEnsCoord()-1)
+                res = halo.DonneCoordDeEnsCoord(alea)
+            else :
+                res = coordo
+                    
+        elif esp == "Predateur":
+            haloProie = self.HaloCaseEspece(coordo, "Proie")
+            if haloProie.DonneTailleEnsCoord() > 0:
+                alea = random.randint(0, haloProie.DonneTailleEnsCoord()-1)
+                res = haloProie.DonneCoordDeEnsCoord(alea)
+                
+            else : 
+                res =  self.DeplacementBasique(coordo, "Proie")  # Cela revient au fonctionnement d'une proie si le prédateur est isolé de proie
+                
+        else :
+            res = coordo
+                
+        return res
+    
+    def ModeDeDeplacement(self, coordo, esp, mode, immobile):
+        ''' Renvoie un mode de choix de déplacement pour un animal '''
+        
+        if esp == "Proie":
+            if mode == "Basique" :
+                res =  self.DeplacementBasique(coordo, esp)
+            elif mode == "Avance1":
+                res = self.DeplacementAvance1(coordo, esp, immobile)
+        elif esp == "Predateur" :
+            if mode == "Basique":
+                res = self.DeplacementBasique(coordo, esp)
+            elif mode == "Avance1":
+                res = self.DeplacementAvance1(coordo, esp, immobile)
+        else :
+            res = coordo
+        return res
+    
+    def DeplacementAvance1(self, coordo, esp, immobile):
+        ''' La proie va se diriger, si cela est possible, sur une case vide ne cotoyant aucun prédateur ou celle en ayant le moins'''
+        ''' Le prédateur va se déplacer vers la proie la plus proche (si égalité de de distance min, une des proies les plsu proches aléatoirement) '''
+        ''' immobile est un paramètre informant de si la proie peut rester par choix sur sa case si elle est strictement mieux que celles autour'''
+        
+        if esp == "Proie" :
+            halo = self.HaloCaseEspece(coordo, "Rien")  
+            
+            # On exclut le cas où la proie ne peut pas bouger
+            if halo.DonneTailleEnsCoord() == 0:
+                res = coordo
+                return res
+            
+            # On retient les cases ayant un danger minimum autour de la proie
+            autour = EnsCoord()
+            minPred = 10
+            for i in range(halo.DonneTailleEnsCoord()):
+                
+                # On réinitialise la liste si une case strictement moins dangereuse est trouvée
+                if self.HaloCaseEspece(halo.DonneCoordDeEnsCoord(i), "Predateur").DonneTailleEnsCoord() < minPred:
+                    autour.RendEnsCoordVide()
+                    autour.AjouteCoordonee(halo.DonneCoordDeEnsCoord(i))
+                    minPred = self.HaloCaseEspece(halo.DonneCoordDeEnsCoord(i), "Predateur").DonneTailleEnsCoord()
+                    
+                # On ajoute à la liste la case si elle est la moins dangereuse à égalité
+                elif self.HaloCaseEspece(halo.DonneCoordDeEnsCoord(i), "Predateur").DonneTailleEnsCoord() == minPred:
+                    autour.AjouteCoordonee(halo.DonneCoordDeEnsCoord(i))
+            
+            # On compare à la position actuelle si immobile == True
+            if immobile == True and  self.HaloCaseEspece(coordo, "Predateur").DonneTailleEnsCoord() < minPred:
+                res = coordo
+                return res
+            else :
+                hasard = random.randint(0, autour.DonneTailleEnsCoord()-1)
+                res = autour.DonneCoordDeEnsCoord(hasard)
+
+                return res
+            
+        elif esp == "Predateur":
+            
+            listeProies = self.CombienAnimaux("Proie")
+            
+            
+            # On exclut le cas où le prédateur ne peut pas bouger
+            if listeProies.DonneTailleEnsCoord() == 0:
+                res = self.DeplacementBasique(coordo, esp)
+                return res
+            
+            # On traite le cas où il n'y a plus de proies - le deplacement redevient alors aléatoire
+            res = self.DeplacementBasique(coordo, "Predateur")
+            
+            # On crée la liste des proies les plus proches
+            autour = EnsCoord()
+            plusProche = donneTotalColonnes()**2 + donneTotalLignes()**2
+            
+            for i in range(listeProies.DonneTailleEnsCoord()):
+                
+                # On réinitialise la liste si une proie plus proche existe 
+                if DistanceCoord(coordo, listeProies.DonneCoordDeEnsCoord(i)) < plusProche :
+                    autour.RendEnsCoordVide()
+                    autour.AjouteCoordonee(listeProies.DonneCoordDeEnsCoord(i))
+                    plusProche = DistanceCoord(coordo, listeProies.DonneCoordDeEnsCoord(i))
+                
+                # Si la proie égale la distance la plus proche
+                elif DistanceCoord(coordo, listeProies.DonneCoordDeEnsCoord(i)) == plusProche :
+                    autour.AjouteCoordonee(listeProies.DonneCoordDeEnsCoord(i))   
+            
+            # On tire une proie parmi les plus proches et on voie si le prédateur peut s'en rapprocher
+            # On en prend un autre si c'est impossible avec celle-ci
+            while autour.DonneTailleEnsCoord() > 0 :
+                hasard = random.randint(0, autour.DonneTailleEnsCoord()-1)
+                objectif = autour.DonneCoordDeEnsCoord(hasard)
+                
+                if objectif.DonneLigne() == coordo.DonneLigne() :
+                    tempx = [coordo.DonneLigne()]
+                elif objectif.DonneLigne() < coordo.DonneLigne() :
+                    tempx = [coordo.DonneLigne(), coordo.DonneLigne() -1 ]
+                else :
+                    tempx = [coordo.DonneLigne(), coordo.DonneLigne() +1 ]
+                
+                if objectif.DonneColonne() == coordo.DonneColonne() :
+                    tempy = [coordo.DonneColonne()]
+                elif objectif.DonneColonne() < coordo.DonneColonne() :
+                    tempy = [coordo.DonneColonne(), coordo.DonneColonne() -1 ]
+                else :
+                    tempy = [coordo.DonneColonne(), coordo.DonneColonne() +1 ]
+                    
+                    
+                # On teste ces coordonnées potentielles
+                potentielle = EnsCoord()    
+                for k in range(len(tempx)):
+                    for l in range(len(tempy)):
+                        potentielle.AjouteCoordonee(Coord(tempx[k], tempy[l]))
+                        
+                potentielle2 = EnsCoord()
+                
+                # On garde les places libres
+                for j in range(potentielle.DonneTailleEnsCoord()):
+                    if self.DansCase(potentielle.DonneCoordDeEnsCoord(j), "Rien") == True or self.DansCase(potentielle.DonneCoordDeEnsCoord(j), "Proie") == True :
+                        potentielle2.AjouteCoordonee(potentielle.DonneCoordDeEnsCoord(j))
+                        
+                # On garde les plus proches
+                potentielle = EnsCoord()                # On réinitialise la variable
+                distMin = donneTotalColonnes()**2 + donneTotalLignes()**2
+                for i in range(potentielle2.DonneTailleEnsCoord()):
+                    if DistanceCoord(potentielle2.DonneCoordDeEnsCoord(i), objectif) < distMin :
+                        distMin = DistanceCoord(potentielle2.DonneCoordDeEnsCoord(i), objectif)
+                        potentielle.RendEnsCoordVide()
+                        potentielle.AjouteCoordonee(potentielle2.DonneCoordDeEnsCoord(i))
+                    elif DistanceCoord(potentielle2.DonneCoordDeEnsCoord(i), objectif) == distMin :
+                        potentielle.AjouteCoordonee(potentielle2.DonneCoordDeEnsCoord(i))
+                
+                if potentielle.DonneTailleEnsCoord() > 0 and distMin < DistanceCoord(coordo, objectif):
+                    hasard2 = random.randint(0, potentielle.DonneTailleEnsCoord()-1)
+                    res = potentielle.DonneCoordDeEnsCoord(hasard2)
+                    return res
+
+                autour.RetireCoordDeEnsCoord_1(hasard)
+                
+            res = coordo
+            return res
+                    
+        else :
+            res = coordo
+            return coordo
+                    
+    def UnTour(self, Mode_Deplacement_Proie, Mode_Deplacement_Predateur, ordre, immobile):
+        ''' Déplace l'ensemble des animaux '''
+        ''' ordre donne l'ordre de déplacement : proies(0) ou prédateurs (1) en premier ou ordre aléatoire (2) '''
+        ''' les deux modeDeplac choisissent comment (et donc où) se déplacent les animaux '''
+        ''' immobile est un booléen autorisant ou non un animal à rester à sa place par choix '''
+        
+        # Crééons le EnsCoord contenant les animaux dans l'ordre à déplacer
+        # Rendons leur ordre aléatoire
+        # On commencera à déplacer les animaux dont les coordonnées sont à la fin de l'EnsCoord
+        listeProie = self.CombienAnimaux("Proie")
+        listeProie.IntervertitNFoisAlea(3*listeProie.DonneTailleEnsCoord())
+        
+        listePredateur = self.CombienAnimaux("Predateur")
+        listePredateur.IntervertitNFoisAlea(3*listePredateur.DonneTailleEnsCoord())
+        
+        
+        if ordre == 0 :         # Les proies d'abord
+            listeADeplacer = ColleEnsCoords(listePredateur, listeProie)
+        elif ordre == 1 :       # Les prédateurs d'abord
+            listeADeplacer = ColleEnsCoords(listeProie, listePredateur)
+        else :                  # Aléatoire
+            listeADeplacer = ColleEnsCoords(listeProie, listePredateur)
+            listeADeplacer.IntervertitNFoisAlea(3*listeADeplacer.DonneTailleEnsCoord())
+        
+        # Déplaçons nos animaux
+        while listeADeplacer.DonneTailleEnsCoord() > 0 :
+            coord = listeADeplacer.DonneCoordDeEnsCoord(listeADeplacer.DonneTailleEnsCoord()-1)     # On récupère les coordonnées de l'animal à déplacer
+            
+            # On trouve l'espérance de vie de l'animal en question
+            if self.DonneAnimalGrille(coord).DonneEspece() == "Proie" :
+                ageMax = Age_Mort_Proie
+                choix = Mode_Deplacement_Proie
+            else :
+                ageMax = Age_Mort_Predateur
+                choix = Mode_Deplacement_Predateur
+            
+            # On le déplace si possible
+            if self.DonneAnimalGrille(coord).DonneAgeAnimal() < ageMax :
+                nvCoord = self.ModeDeDeplacement(coord, self.DonneAnimalGrille(coord).DonneEspece(), choix, immobile)
+                bebe = self.SeReproduit(coord)
+                self.DeplaceUnAnimal(coord, nvCoord, bebe)
+                
+                # Dans le cas où proies et prédateurs sont confondus, il faut enlever la proie de la liste si elle est mangée
+                if ordre == 2 :
+                    for i in range(listeADeplacer.DonneTailleEnsCoord()):
+                        if CoordIdentiques(nvCoord, listeADeplacer.DonneCoordDeEnsCoord(i)) == True :
+                            listeADeplacer.RetireCoordDeEnsCoord_2(i)
+                            break
+                            
+            else :
+                self.ModifieNombreAnimalGrille(self.DonneAnimalGrille(coord).DonneEspece(), self.DonneNombreEspeceGrille(self.DonneAnimalGrille(coord).DonneEspece()) - 1)
+                self.ModifieGrilleCase(coord, Animal(0, coord))
+                
+            # La condition gère les suppressions de proies mangées dans le cas ordre = 2
+            if listeADeplacer.DonneTailleEnsCoord() > 0 :
+                listeADeplacer.RetireCoordDeEnsCoord_1(listeADeplacer.DonneTailleEnsCoord() - 1)
+        
+    def GrilleVide(self):
+        ''' Informe de si une grille est vide - sans proie ni prédateur '''
+        nbProie = self.DonneNombreEspeceGrille("Proie")
+        nbPred = self.DonneNombreEspeceGrille("Predateur")
+        return (nbProie == 0 and nbPred == 0)
+        
+        
+    def StopSimulation(self):
+        ''' Doit-on arrêter la simulation '''
+        if self.DonneNombreEspeceGrille("Predateur") > 0:
+            return False
+        elif self.DonneNombreEspeceGrille("Proie") == 0 :
+            return True 
+        else :
+            return self.DonneNombreEspeceGrille("Proie") > 2/3 * donneTotalColonnes() * donneTotalLignes()
+        
+    def AffichageEmoji(self, nature, afficheNenN):
+        ''' Affiche avec des emojis '''
+        
+        print("")
+        
+        # On ne peut pas afficher plus que de 1 en 1
+        if Espace_Entre_2_Nombres==0:
+            afficheNenN = False
+            
+        # On affiche les numéros des colonnes
+        if afficheNenN == True :
+            afficheNEspace(3)
+            
+            for i in range(1, donneTotalColonnes() + 1):
+                if i%Espace_Entre_2_Nombres == 0 :
+                    if i < 10 :
+                        afficheNEspace(2)
+                    if i%2 == 0  :
+                        afficheNEspace(1)
+                    print(i, end = "")
+                else :
+                    afficheNEspace(2)
+            print("")
+        
+        # On affiche les lignes ainsi que leurs numéros
+        for j in range(donneTotalLignes()):
+            
+            # Affichage du numéro
+            if afficheNenN == True :
+                afficheNEspace(1)
+                
+                if (j+1)%Espace_Entre_2_Nombres == 0 :
+                    if (j+1) < 10:
+                        afficheNEspace(1)
+                    print(j+1, end = "")
+                else :
+                    afficheNEspace(2)
+            else : 
+                afficheNEspace(1)
+                
+            # Affichage des animaux
+            for k in range(donneTotalColonnes()):
+                esp = self.DonneAnimalGrille(Coord(j, k)).DonneEspece()
+                
+                if esp == "Predateur":
+                    print(nature[2], end = "")
+                elif esp == "Proie":
+                    print(nature[1], end = "")
+                elif esp == "Arbre1":
+                    print(nature[3], end = "")
+                elif esp == "Arbre2":
+                    print(nature[4], end = "")
+                elif Fleurs == True and random.randint(0, 10) == 0:
+                    print(nature[random.randint(5, len(nature)-1)], end = "")
+                else :
+                    print(nature[0], end = "")
+                    
+            print("")
+                
+        print("")
+        
+        # On affiche le nombre d'animaux dans la simulation
+        afficheNEspace(int(donneTotalColonnes()*1))
+        print(nature[2], " : ", self.DonneNombreEspeceGrille("Predateur"), end = "")
+        afficheNEspace(int(donneTotalColonnes()*0.1))
+        print(nature[1], " : ", self.DonneNombreEspeceGrille("Proie"))
+        
+
+    def Affiche_Final(self, ThemeChoix, L_C, emoji):
+        ''' Affiche la simulation '''
+        ''' emoji est un booléen selon le mode d'affichage souhaité '''
+        
+        if emoji == True :
+            self.AffichageEmoji(ThemeChoix, L_C)
+        else :
+            self.AffichageSimple()
+        print("")
+            
