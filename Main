@@ -1,0 +1,89 @@
+"""
+Projet Python ENSAE S2
+@author: Kouhana Ava, Liffran Anna, Lacour Xavier
+
+"""
+
+# Bibliothèques nécessaires
+import numpy as np
+
+import random
+random.seed()
+import time
+import matplotlib.pyplot as plt
+
+# Cette partie comporte les variables de paramètres
+
+# Statistiques - Simulation
+Affiche_Stat = True
+Affiche_Gr = False
+Normalise = True
+Stop = 100
+
+# Pourcentages initialisation
+Debut_Predateur = 0.03              # Part de prédateurs au début
+Debut_Proie = 0.2               # Part de proie au début
+
+# Taille de la grille
+LIGNES = 100
+COLONNES = 100
+
+# Options d'arbres
+Arbre = True
+Debut_Arbre = 0.03      # Part d'arbres si inclus
+
+# Fleurs pour enjoliver
+Fleurs = True
+
+
+
+# Affichage, pour la fonction avec les émojis des lignes et des colonnes
+Avec_Emojis = True			    	# True pour utiliser les emojis, False pour les lettres L et P
+Espace_Entre_2_Nombres = 2              # Pour l'ffichage des nombres sur les bords
+attente = 0.1
+AffLiCol = True 
+
+Theme1 = ["🌾️", "🐇", "🦊", "🌳️", "🌳️" ,"☘️" ]
+Theme2 = ["🌊", "🐡", "🦈", "🏝️", "🏝️", "🐚"]
+Theme3 = ["🌊", "🐡", "🐙", "🏝️", "🏝️", "🐚"]
+Theme4 = ["🌱", "🐛", "🦜", "🌴", "🌴", "🌼"]
+Theme5 = ["🌾️", "🦌", "🐯", "🌳️", "🌳️" ,"🏵️" ]
+
+ThemeChoisi = Theme1        # Thème d'affichage actuel
+if ThemeChoisi == Theme2 or ThemeChoisi == Theme3:
+#    Arbre = False
+     Fleurs = False
+     
+# Ordre de déplacement     
+# Vaut 0 (Proies d'abord), 1 (Predateurs d'abordou 2
+# Conseil : 0 ou 2 sont préférables
+OrdreDeplac = 2 
+
+# Infos du prédateur
+FoodInit = 5            # Niveau d'énergie originelle des prédateurs
+FoodProie = 5           # Energie donnée par les proies lorsqu'lles sont mangées
+FoodReprod = 9          # Energie nécessaire à une prédatrice pour se reproduire
+MaxFood = 10            # Energie maximum
+ProbBirthPredateur = 0.7    # Si les conditions sont réunes, probabilité d'avoir un bébé
+Age_Mort_Predateur = 300    # Age de mort
+MinFreeBirthPredateur = 0   # Nombre de cases libres nécessaires autour afin de se reproduire
+ModeDeplacementPredateur = "Avance1"        # Choix entre "Basique", "Avance1"
+
+# Infos de la proie
+ProbBirthProie = 1          # Si les conditions sont réunes, probabilité d'avoir un bébé
+MinFreeBirthProie = 0       # Nombre de cases libres nécessaires autour afin de se reproduire
+Age_Mort_Proie = 60         # Age de mort
+ModeDeplacementProie = "Avance1"        # Choix entre "Basique", "Avance1"
+Immobilite = True          # Capacité à rester sur la même case de façon non contrainte
+
+
+
+
+
+
+# Simulation visuelle
+#Simulation_Affichage(ThemeChoisi, AffLiCol, Avec_Emojis, ModeDeplacementProie, ModeDeplacementPredateur, OrdreDeplac, Immobilite, attente)
+
+# Evolution des populations
+Simulation_Stat(Affiche_Gr, Affiche_Stat, ThemeChoisi, AffLiCol, Avec_Emojis, ModeDeplacementProie, ModeDeplacementPredateur, OrdreDeplac, Immobilite, Normalise, Stop, attente)
+
