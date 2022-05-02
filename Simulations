@@ -1,0 +1,103 @@
+def Simulation_Affichage(ThemeChoix, L_C, emoji, ModeDeplacementProie, ModeDeplacementPredateur, ordreDeplac, immobilite, pause):
+    ''' Execute la simulation et l'affiche '''
+    ''' L_C est un booléen conditionnant l'affichage des lignes/colonnes sans l'affichage évolué '''
+    
+    # On crée et initialise la grille
+    simul = Grille()
+    simul.Initialise_Grille()
+    
+    # On simule tant qu'il y a un intérêt
+    while not simul.StopSimulation() :
+    
+        simul.UnTour(ModeDeplacementProie, ModeDeplacementPredateur, ordreDeplac, immobilite)
+        simul.Affiche_Final(ThemeChoix, L_C, emoji)
+        
+        # Permet de garder un rythme agréable à observer
+        time.sleep(pause)
+    
+def Simulation_Stat(affi_gr, affi_statFin, ThemeChoix, L_C, emoji, ModeDeplacementProie, ModeDeplacementPredateur, ordreDeplac, immobilite, normalise, stop, pause):
+    ''' Etablie les statistiques de la population au cours du temps, les affiche si voulu, et les renvoie '''
+    ''' Affichage possible de la grille  '''
+    
+    # On crée et initialise la grille
+    simul = Grille()
+    simul.Initialise_Grille()
+    
+    # Si on normalise, on le fait par la taille de la grille
+    if normalise == True :
+        norm = donneTotalColonnes()*donneTotalLignes()
+    else :
+        norm = 1
+    
+    # On crée le tableau des statistiques
+    # Ligne 1 : Le nombre (la part) de prédateurs dans la grille
+    # Ligne 2 : Le nombre (la part) de proies dans la grille
+    # Ligne 3 : Proportion de proies dans la population totale selon le temps
+    stats = np.empty((3, stop))
+    stats[0,0] = simul.DonneNombreEspeceGrille("Predateur")/norm
+    stats[1,0] = simul.DonneNombreEspeceGrille("Proie")/norm
+    stats[2,0] = simul.DonneNombreEspeceGrille("Proie")/(simul.DonneNombreEspeceGrille("Proie") + simul.DonneNombreEspeceGrille("Predateur"))
+    
+    # On remplit le tableau en affichant potentiellement le graphe ainsi que la grille
+    for i in range(stop):
+        
+        # Pour savoir où l'on en est temporellement
+        print("Période ", i+1, " sur ", stop+1)
+        print("Part de la simulation effectuée : ", int((i+1)*100/stop+1)-1, "%")
+        
+        # On fait tourner la simulation d'un temps
+        simul.UnTour(ModeDeplacementProie, ModeDeplacementPredateur, ordreDeplac, immobilite)
+        
+        # On remplit le tableau
+        stats[0,i] = simul.DonneNombreEspeceGrille("Predateur")/norm
+        stats[1,i] = simul.DonneNombreEspeceGrille("Proie")/norm
+        if simul.GrilleVide() == False:
+            stats[2,i] = simul.DonneNombreEspeceGrille("Proie")/(simul.DonneNombreEspeceGrille("Proie") + simul.DonneNombreEspeceGrille("Predateur"))
+        else :
+            stats[2, i] = -0.1
+            
+        # Affiche-t-on la simulation ?
+        if affi_gr == True :
+            simul.Affiche_Final(ThemeChoix, L_C, emoji)
+            time.sleep(pause)
+            
+        # Si la simulation ne va plus vraiment évoluer, on l'écourte
+        if simul.StopSimulation() == True:
+            print("...")
+            print("...")
+            print("Simulation arrêtée prématurement")
+            break
+        
+    stop = i
+    stats = stats[:,:stop]
+    # Affiche-t-on les statistiques principales de la simulation ?
+    if affi_statFin == True :
+        
+        if normalise == True:
+            
+            plt.plot(np.arange(0, stop), stats[0, :], label = "Proportion de predateurs dans la simulation", color = "cyan")
+            plt.plot(np.arange(0, stop), stats[1, :], label = "Proportion de proies dans la simulation", color = "darkorchid")
+            plt.plot(np.arange(0, stop), stats[2, :], label = "Proportion de proies dans la population animale", color = "magenta")
+            plt.xlabel("Temps")
+            plt.ylabel("Proportion d'individus de chaque espèce selon le temps")
+            plt.title("Evolution de la population")
+            plt.legend()
+            
+        else :
+            fig, ax = plt.subplots(1,2, figsize = (15,4))
+            ax[0].plot(np.arange(0, stop), stats[0, :], label = "Nombre de prédateur dans la simulation", color = "cyan")
+            ax[0].plot(np.arange(0, stop), stats[1, :], label = "Nombre de proies dans la simulation", color = "darkorchid")
+            ax[0].set_xlabel("Temps")
+            ax[0].set_ylabel("Nombre d'individus de chaque espèce selon le temps")
+            ax[0].set_title("Evolution de la population")
+            ax[0].legend()
+
+            ax[1].plot(np.arange(0, stop), stats[2, :], label = "Part de proies dans la population animale", color = "magenta")
+            ax[1].set_xlabel("Temps")
+            ax[1].set_ylabel("Part de proies dans la population animale")
+            ax[1].set_title("Evolution de la population")
+            ax[1].legend()
+            
+        
+
+    return stats
