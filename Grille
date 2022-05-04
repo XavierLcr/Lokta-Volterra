@@ -431,13 +431,15 @@ class Grille :
             # On trouve l'espérance de vie de l'animal en question
             if self.DonneAnimalGrille(coord).DonneEspece() == "Proie" :
                 ageMax = Age_Mort_Proie
+                Var = Ecty_Proie
                 choix = Mode_Deplacement_Proie
             else :
                 ageMax = Age_Mort_Predateur
+                Var = Ecty_Pred
                 choix = Mode_Deplacement_Predateur
             
             # On le déplace si possible
-            if self.DonneAnimalGrille(coord).DonneAgeAnimal() < ageMax :
+            if self.DonneAnimalGrille(coord).DonneAgeAnimal() < np.random.normal(ageMax, Var) :
                 nvCoord = self.ModeDeDeplacement(coord, self.DonneAnimalGrille(coord).DonneEspece(), choix, immobile)
                 bebe = self.SeReproduit(coord)
                 self.DeplaceUnAnimal(coord, nvCoord, bebe)
