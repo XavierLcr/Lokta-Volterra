@@ -62,17 +62,19 @@ OrdreDeplac = 2
 # Infos du prédateur
 FoodInit = 5            # Niveau d'énergie originelle des prédateurs
 FoodProie = 5           # Energie donnée par les proies lorsqu'lles sont mangées
-FoodReprod = 9          # Energie nécessaire à une prédatrice pour se reproduire
+FoodReprod = 7          # Energie nécessaire à une prédatrice pour se reproduire
 MaxFood = 10            # Energie maximum
-ProbBirthPredateur = 0.7    # Si les conditions sont réunes, probabilité d'avoir un bébé
-Age_Mort_Predateur = 300    # Age de mort
-MinFreeBirthPredateur = 0   # Nombre de cases libres nécessaires autour afin de se reproduire
+ProbBirthPredateur = 0.8    # Si les conditions sont réunes, probabilité d'avoir un bébé
+Age_Mort_Predateur = 100    # Age de mort espéré
+Ecty_Pred = 10
+MinFreeBirthPredateur = 1   # Nombre de cases libres nécessaires autour afin de se reproduire
 ModeDeplacementPredateur = "Avance1"        # Choix entre "Basique", "Avance1"
 
 # Infos de la proie
 ProbBirthProie = 1          # Si les conditions sont réunes, probabilité d'avoir un bébé
-MinFreeBirthProie = 0       # Nombre de cases libres nécessaires autour afin de se reproduire
-Age_Mort_Proie = 60         # Age de mort
+MinFreeBirthProie = 4       # Nombre de cases libres nécessaires autour afin de se reproduire
+Age_Mort_Proie = 50         # Age de mort éspéré
+Ecty_Proie = 2
 ModeDeplacementProie = "Avance1"        # Choix entre "Basique", "Avance1"
 Immobilite = True          # Capacité à rester sur la même case de façon non contrainte
 
