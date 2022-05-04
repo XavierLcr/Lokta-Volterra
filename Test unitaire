@@ -1,0 +1,17 @@
+#Voici trois tests unitaires sur la fonction CoordIdentiques:
+
+import unittest
+
+class MyTest(unittest.TestCase):
+    
+    def test_unitaire(self):
+        self.assertEqual(CoordIdentiques(Coord(2,1),Coord(1,2)), False)
+        
+    def test_unitaire(self):
+        self.assertEqual(CoordIdentiques(Coord(2,1),Coord(2,1)), True)
+        
+    def test_unitaire(self):
+        self.assertEqual(CoordIdentiques(Coord(2,1),Coord(2,3)), False)
+
+if __name__ == '__main__':
+    unittest.main()
